@@ -1,0 +1,19 @@
+<%- include('partials/header.ejs') %>
+    <% if (locals.blogs) { %>
+        <h1>Recent Blogs</h1>
+        <% for( let i = blogs.length-1; i >= 0; i-- ) { %>
+        <h2><%= blogs[i].title %></h2>
+        <span class="date"><%= blogs[i].date %></span>
+        <p><%= blogs[i].text %></p>
+        <% } %>
+
+        <% } else { %>
+            <h2>Title</h2>
+            <span>Date</span>
+            <p>Paragraph Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni maxime, labore optio asperiores
+                vitae illo hic, consequuntur corporis est cumque sapiente, nesciunt voluptatum laboriosam
+                necessitatibus provident recusandae quasi culpa veritatis!</p>
+
+            <% } %>
+
+                <%- include('partials/footer.ejs') %>
