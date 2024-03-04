@@ -1,0 +1,16 @@
+<%- include('partials/header.ejs') %>
+
+    <form action="/new" method="POST">
+        <div class="form-floating mb-3">
+            <input name="title" type="text" class="form-control text-start" id="title" placeholder="Title">
+            <label for="title">Title</label>
+        </div>
+        <div class="form-floating mb-3">
+            <textarea name="text" class="form-control text-start" id="text" placeholder="Text"
+                style="height: 250px"></textarea>
+            <label for="text">Text</label>
+        </div>
+        <button type="submit" class="btn btn-primary">📜Post📜</button>
+    </form>
+
+    <%- include('partials/footer.ejs') %>

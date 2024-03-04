@@ -1,0 +1,14 @@
+<%- include('partials/header.ejs') %>
+
+<form action="/delete" method="POST">
+        <select class="form-select mb-3" aria-label="Default select example" name="blogIndex">
+            <option selected>Select Your Blog to Delete</option>
+            <% for( let i = 0; i < blogs.length; i++ ) { %>
+                <option value=<%= i %>><%= `${blogs[i].title} ${blogs[i].date}` %></option>
+            <% } %>
+          </select>
+        
+        <button type="submit" class="btn btn-primary">🗑️Delete🗑️</button>
+    </form>
+
+    <%- include('partials/footer.ejs') %>

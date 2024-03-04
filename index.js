@@ -1,40 +1,84 @@
 import express from "express";
-import bodyParser from "body-parser";
+import localStorage from "localStorage";
+import fs from "fs";
+import { date } from "./date.js";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-let blogs = [
-  {
-    title: "Demo Title",
-    date: "03/03/2024",
-    text: `1 Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni maxime, labore optio asperiores
-    vitae illo hic, consequuntur corporis est cumque sapiente, nesciunt voluptatum laboriosam
-    necessitatibus provident recusandae quasi culpa veritatis!`,
-  },
-  {
-    title: "Demo Title 2",
-    date: "04/03/2024",
-    text: `2 Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni maxime, labore optio asperiores
-    vitae illo hic, consequuntur corporis est cumque sapiente, nesciunt voluptatum laboriosam
-    necessitatibus provident recusandae quasi culpa veritatis!`,
-  },
-  {
-    title: "Demo Title 3",
-    date: "05/03/2024",
-    text: `3 Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni maxime, labore optio asperiores
-    vitae illo hic, consequuntur corporis est cumque sapiente, nesciunt voluptatum laboriosam
-    necessitatibus provident recusandae quasi culpa veritatis!`,
-  },
-];
+// localStorage setting for database
+fs.readFile("./data.json", function (err, data) {
+  localStorage.setItem("blogs", data);
+});
 
 app.get("/", (req, res) => {
-  res.render("index.ejs", {
-    blogs : blogs
+  let blogsParsed = JSON.parse(localStorage.getItem("blogs"));
+  res.render("index.ejs", { blogs: blogsParsed });
+});
+
+app.get("/new", (req, res) => {
+  res.render("new.ejs");
+});
+
+app.get("/delete", (req, res) => {
+  let blogsParsed = JSON.parse(localStorage.getItem("blogs"));
+  res.render("delete.ejs", { blogs: blogsParsed });
+});
+
+app.get("/update", (req, res) => {
+  let blogsParsed = JSON.parse(localStorage.getItem("blogs"));
+  res.render("update.ejs", { blogs: blogsParsed });
+});
+
+app.post("/new", (req, res) => {
+  let blogs = JSON.parse(localStorage.getItem("blogs"));
+  blogs.push({
+    title: req.body.title,
+    date: date(),
+    text: req.body.text,
   });
+  localStorage.setItem("blogs", JSON.stringify(blogs));
+  res.redirect("/");
+});
+
+app.post("/delete", (req, res) => {
+  if (req.body.blogIndex === "Select Your Blog to Delete") {
+    res.redirect("/delete");
+  } else {
+    let blogs = JSON.parse(localStorage.getItem("blogs"));
+    blogs.splice(req.body.blogIndex, 1);
+    localStorage.setItem("blogs", JSON.stringify(blogs));
+    res.redirect("/");
+  }
+});
+
+app.post("/select", (req, res) => {
+  let index = req.body.index;
+  if (index >= 0) {
+    let blogs = JSON.parse(localStorage.getItem("blogs"));
+    let title = blogs[index].title;
+    let text = blogs[index].text;
+    res.json({ title: title, text: text });
+  }
+});
+app.post("/update", (req, res) => {
+  if (req.body.blogIndex === "Select Your Blog to Update") {
+    res.redirect("/update");
+  } else {
+    let blogs = JSON.parse(localStorage.getItem("blogs"));
+    blogs.splice(req.body.blogIndex, 1);
+    blogs.push({
+      title: req.body.title,
+      date: date(),
+      text: req.body.text,
+    });
+    localStorage.setItem("blogs", JSON.stringify(blogs));
+    res.redirect("/");
+  }
 });
 
 app.listen(port, () => {

@@ -1,0 +1,51 @@
+<%- include('partials/header.ejs') %>
+    <form action="/update" method="POST">
+        <select id="updateOptions" class="form-select mb-3" aria-label="Default select example" name="blogIndex">
+            <option selected>Select Your Blog to Update</option>
+            <% for( let i=0; i < blogs.length; i++ ) { %>
+                <option value=<%=i %>><%= `${blogs[i].title} ${blogs[i].date}` %>
+                </option>
+                <% } %>
+        </select>
+        <div class="form-floating mb-3">
+            <% if (locals.title && locals.text) { %>
+                <input name="title" type="text" class="form-control text-start" id="title" placeholder="Title" value=<%= title %>>
+                <label for="title">Title</label>
+        </div>
+        <div class="form-floating mb-3">
+            <textarea name="text" class="form-control text-start" id="text" placeholder="Text"
+                style="height: 250px"><%= text %></textarea>
+            <% } else { %>
+                <input name="title" type="text" class="form-control text-start" id="title" placeholder="Title">
+                <label for="title">Title</label>
+        </div>
+        <div class="form-floating mb-3">
+            <textarea name="text" class="form-control text-start" id="text" placeholder="Text"
+                style="height: 250px"></textarea>
+            <% } %>
+                <label for="text">Text</label>
+        </div>
+        <button type="submit" class="btn btn-primary">📜Update📜</button>
+    </form>
+    <script>
+        document.querySelector("#updateOptions").addEventListener('change', function () {
+            const selectedOption = this.value;
+            fetch('/select', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    index: selectedOption
+                })
+            })
+            .then(response => response.json()) // Parse the response as JSON
+            .then(data => {
+                document.querySelector('#title').value = data.title;
+                document.querySelector('#text').value = data.text;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+    
+    <%- include('partials/footer.ejs') %>
